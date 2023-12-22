@@ -1,1 +1,1 @@
-# hands-on-multithreading-cpp
+multithreading-cpp
