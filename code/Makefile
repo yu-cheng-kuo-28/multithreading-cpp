@@ -22,5 +22,17 @@ fetchTimeMultithreaded_02: fetchTimeMultithreaded_02.cpp
 fetchTimeMultithreaded_03: fetchTimeMultithreaded_03.cpp
 	g++ -o fetchTimeMultithreaded_03 fetchTimeMultithreaded_03.cpp -pthread -lcurl
 
+raceCondition_01: raceCondition_01.cpp
+	g++ -o raceCondition_01 raceCondition_01.cpp -pthread
+
+raceCondition_02: raceCondition_02.cpp
+	g++ -o raceCondition_02 raceCondition_02.cpp -pthread
+
+raceCondition_03: raceCondition_03.cpp
+	g++ -o raceCondition_03 raceCondition_03.cpp -pthread
+
+conditionVariable: conditionVariable.cpp
+	g++ -o conditionVariable conditionVariable.cpp -pthread
+
 clean:
-	rm -f singleThreaded multithreaded_01 multithreaded_02 multithreaded_03 ultithreaded_10 fetchTimeMultithreaded_01 fetchTimeMultithreaded_02 fetchTimeMultithreaded_03
+	rm -f singleThreaded multithreaded_01 multithreaded_02 multithreaded_03 ultithreaded_10 fetchTimeMultithreaded_01 fetchTimeMultithreaded_02 fetchTimeMultithreaded_03 raceCondition_01 raceCondition_02 raceCondition_03
