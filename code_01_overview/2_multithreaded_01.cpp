@@ -1,3 +1,7 @@
+/*
+Though multithreaded, the lack of delay 
+*/
+
 #include <iostream>
 #include <thread>
 
