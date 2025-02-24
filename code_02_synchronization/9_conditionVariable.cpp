@@ -1,31 +1,33 @@
+// 9_conditionVariable.cpp
 #include <iostream>
 #include <thread>
 #include <mutex>
 #include <condition_variable>
+using namespace std;
 
-std::mutex mtx;
-std::condition_variable cv;
+mutex mtx;
+condition_variable cv;
 bool ready = false;
 
 void workerThread() {
-    std::unique_lock<std::mutex> lock(mtx);
+    unique_lock<mutex> lock(mtx);
     cv.wait(lock, []{ return ready; });
 
     // Perform work after the condition is met
-    std::cout << "Worker thread is processing data." << std::endl;
+    cout << "Worker thread is processing data." << endl;
 }
 
 int main() {
-    std::thread worker(workerThread);
+    thread worker(workerThread);
 
     {
-        std::lock_guard<std::mutex> lock(mtx);
-        ready = true;
+        lock_guard<mutex> lock(mtx);
+        ready = true; // Try replacing true with false and test what would happen!
     }
     cv.notify_one();
 
     worker.join();
-    std::cout << "Back in main." << std::endl;
+    cout << "Back in main." << endl;
 
     return 0;
 }

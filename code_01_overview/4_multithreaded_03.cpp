@@ -1,35 +1,38 @@
+/* 4_multithreaded_03.cpp */
+// g++ 4_multithreaded_03.cpp -o 4_multithreaded_03 -pthread
 #include <iostream>
 #include <thread>
 #include <chrono>
+using namespace std;
 
 void function1() {
   for (int i = 0; i < 200; ++i) {
-    std::cout << "A";
-    std::this_thread::sleep_for(std::chrono::nanoseconds(1)); // 0.1 milliseconds = 100 microseconds
+    cout << "A";
+    this_thread::sleep_for(chrono::nanoseconds(1)); // 0.1 milliseconds = 100 microseconds
   }
 }
 
 void function2() {
   for (int i = 0; i < 200; ++i) {
-    std::cout << "B";
-    std::this_thread::sleep_for(std::chrono::nanoseconds(1)); // 0.1 milliseconds = 100 microseconds
+    cout << "B";
+    this_thread::sleep_for(chrono::nanoseconds(1)); // 0.1 milliseconds = 100 microseconds
   }
 }
 
 void function3(char c) {
   for (int i = 0; i < 200; ++i) {
-    std::cout << c;
-    std::this_thread::sleep_for(std::chrono::nanoseconds(1)); // 0.1 milliseconds = 100 microseconds
+    cout << c;
+    this_thread::sleep_for(chrono::nanoseconds(1)); // 0.1 milliseconds = 100 microseconds
   }
 }
 
 int main() {
-  std::thread worker1(function1);
-  std::thread worker2(function2);
-  std::thread worker3(function3, '-');
+  thread worker1(function1);
+  thread worker2(function2);
+  thread worker3(function3, '-');
   worker1.join();
   worker2.join();
   worker3.join();
-  std::cout << "\n";
+  cout << "\n";
 }
 

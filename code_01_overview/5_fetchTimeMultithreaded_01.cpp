@@ -1,24 +1,38 @@
+// 5_fetchTimeMultithreaded_01.cpp
+
+/*
+// # Install the library for #include <curl/curl.h>
+$ sudo apt-get install libcurl4-openssl-dev
+// # Install the library for #include <nlohmann/json.hpp>
+$ sudo apt-get install nlohmann-json3-dev
+$ g++ 5_fetchTimeMultithreaded_01.cpp -o 5_fetchTimeMultithreaded_01 -pthread -lcurl
+*/
+
 #include <iostream>
 #include <thread>
 #include <chrono>
-#include <curl/curl.h>
+#include <curl/curl.h> // Make sure this library is included and set up
 #include <mutex>
 #include <nlohmann/json.hpp> // Make sure this library is included and set up
+#include <sstream>
+#include <ctime>
+using namespace std;
 
-std::mutex dataMutex;          // Mutex for synchronizing access to sharedTimeData
-std::string sharedTimeData;    // Global variable to store the shared time data
+mutex dataMutex;          // Mutex for synchronizing access to sharedTimeData
+string sharedTimeData;    // Global variable to store the shared time data
 
 // This is a callback function used by libcurl for storing fetched data
-size_t WriteCallback(void *contents, size_t size, size_t nmemb, std::string *userp) {
+size_t WriteCallback(void *contents, size_t size, size_t nmemb, string *userp) {
     userp->append((char*)contents, size * nmemb);
     return size * nmemb;
 }
 
 // Function to fetch the current time from an API
-std::string fetchCurrentTime() {
+
+string fetchCurrentTime() {
     CURL *curl;
     CURLcode res;
-    std::string readBuffer;
+    string readBuffer;
 
     curl = curl_easy_init();
     if (curl) {
@@ -32,8 +46,8 @@ std::string fetchCurrentTime() {
         try {
             auto jsonResponse = nlohmann::json::parse(readBuffer);
             return jsonResponse["datetime"];
-        } catch(const std::exception& e) {
-            std::cerr << "JSON parse error: " << e.what() << '\n';
+        } catch(const exception& e) {
+            cerr << "JSON parse error: " << e.what() << '\n';
             return "";
         }
     }
@@ -42,33 +56,39 @@ std::string fetchCurrentTime() {
 
 void updateTimeData() {
     while (true) {
-        std::string currentTime = fetchCurrentTime();
+        string currentTime = fetchCurrentTime();
+
+        // Critical section 01
         {
-            std::lock_guard<std::mutex> guard(dataMutex);
+            lock_guard<mutex> guard(dataMutex);
             sharedTimeData = currentTime;
         }
-        std::this_thread::sleep_for(std::chrono::seconds(6));
+
+        this_thread::sleep_for(chrono::seconds(10));
     }
 }
 
-// Simulated function to display weather data
+// Simulated function to display time data
 void displayTimeData() {
     while (true) {
-        std::string currentTime;
+        string currentTime;
+        
+        // Critical section 02
         {
-            std::lock_guard<std::mutex> guard(dataMutex);
+            lock_guard<mutex> guard(dataMutex);
             currentTime = sharedTimeData;
         }
+
         if (!currentTime.empty()) {
-            std::cout << "Current time is: " << currentTime << std::endl;
+            cout << "Current time is: " << currentTime << endl;
         }
-        std::this_thread::sleep_for(std::chrono::seconds(3));
+        this_thread::sleep_for(chrono::seconds(5));
     }
 }
 
 int main() {
-    std::thread timeUpdater(updateTimeData);
-    std::thread timeDisplayer(displayTimeData);
+    thread timeUpdater(updateTimeData);
+    thread timeDisplayer(displayTimeData);
 
     timeUpdater.join();
     timeDisplayer.join();
